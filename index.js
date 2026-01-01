@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     pin: true,
     animation: a,
     invalidateOnRefresh: true,
-    scrub: 200,
+    scrub: 195,
   });
   const goUp = (element) => {
     gsap.to(element, {
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     });
   };
   const boxes = document.querySelectorAll(".provide p");
-  const elements = [".img_a_1", ".img_a_2", ".img_a_3", ".m_i", ".t"];
+  const elements = [".m_i", ".t", ".loc"];
   elements.forEach((element) => {
     goUp(element);
   });
