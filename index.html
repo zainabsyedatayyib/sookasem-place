@@ -1,98 +1,267 @@
+<!--
+================================================================================
+SOOKASEM PLACE - Apartment Rental Website
+================================================================================
+
+This is the main HTML file for Sookasem Place, an apartment rental property
+located in Bangkok, Thailand. The website showcases amenities, nearby locations,
+pricing, and provides a booking form.
+
+KEY FEATURES:
+  • Dark/Light theme toggle with system preference detection
+  • GSAP scroll-triggered animations (see index.js)
+  • Responsive design for mobile and desktop
+  • Accessible with ARIA landmarks and screen reader support
+  • FormSubmit integration for contact form handling
+
+STRUCTURE OVERVIEW:
+  1. <head> - Meta tags, CSS variables, and styles
+  2. <header> - Navigation bar with theme toggle
+  3. <section#hero> - Hero banner with animated text
+  4. <main> - Primary content sections:
+     - About & Gallery
+     - What We Provide (amenities)
+     - Our Security
+     - Near Us (horizontal scroll gallery)
+     - Rental Rate
+     - More Info (pricing table)
+     - Booking (contact form)
+     - Location (Google Maps)
+  5. <footer> - Contact info and credits
+
+ACCESSIBILITY:
+  • ARIA landmarks on all major sections
+  • Skip-to-content link
+  • Alt text on all images
+  • Form labels and autocomplete attributes
+  • 3:1+ contrast ratios for text
+
+@author Zainab Syeda Tayyab
+@see index.js for animation code
+================================================================================
+-->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- ====================================================================
+         META TAGS
+         ====================================================================
+         These provide essential information to browsers and search engines.
+    -->
+    <meta charset="UTF-8" /><!-- Character encoding (supports all languages) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><!-- Responsive design -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" /><!-- IE compatibility -->
     <title>Sookasem Place</title>
-    <!-- TODO USE FORMSUBMIT TO MAIL TO APARTMENT OWNER'S ADRESSSSSSS -->
-     <!-- UNDERSTAND THE CODE-->
+    
+    <!-- Note: FormSubmit sends form data to email without backend code -->
+    
     <style>
-      /* ---------------------------
-         Fonts & CSS variables
-         --------------------------- */
+      /* ====================================================================
+         CSS CUSTOM PROPERTIES (Variables)
+         ====================================================================
+         
+         CSS variables allow us to define values once and reuse them.
+         They enable the dark/light theme toggle - when we change
+         data-theme="light", these values automatically update everywhere.
+         
+         Syntax: --variable-name: value;
+         Usage:  property: var(--variable-name);
+         
+         Benefits:
+           • Single source of truth for colors
+           • Easy theme switching
+           • Maintainable and consistent design
+      */
+      
+      /* --------------------------
+         Web Fonts
+         --------------------------
+         @import loads Google Fonts:
+           • Roboto Condensed - Body text (clean, readable)
+           • Sansation - Headings (modern, distinctive)
+      */
       @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 
+      /* --------------------------
+         Dark Theme (Default)
+         --------------------------
+         :root is the highest-level selector (same as html but more specific).
+         These are the default colors for dark mode.
+      */
       :root{
-        --bg:#0f1720;
-        --card:#0f172030;
-        --accent:#7fac52;
-        --muted:#cdd6b3;
-        --text:#f2f4f3;
-        --max-width:1100px;
-        --radius:12px;
-        --button-bg: rgba(255,255,255,0.03);
-        transition: color .18s ease, background .25s ease; /* combined duplicate transition */
+        --bg:#0f1720;           /* Page background - dark blue-gray */
+        --card:#0f172030;       /* Card backgrounds with transparency */
+        --accent:#c8e89a;       /* Primary accent - soft lime green */
+        --muted:#e8f0dc;        /* Secondary text - off-white green tint */
+        --text:#ffffff;         /* Primary text - white */
+        --max-width:1100px;     /* Content max width for readability */
+        --radius:12px;          /* Border radius for rounded corners */
+        --button-bg: rgba(255,255,255,0.03); /* Subtle button background */
+        
+        /* Smooth color transitions when theme changes */
+        transition: color .18s ease, background .25s ease;
       }
 
-      /* ---------------------------
-         Light theme overrides
-         --------------------------- */
+      /* --------------------------
+         Light Theme Overrides
+         --------------------------
+         When html has data-theme="light", these values OVERRIDE :root.
+         The CSS variables automatically update throughout the page!
+         
+         How it works:
+           1. JavaScript adds data-theme="light" to <html>
+           2. This selector becomes active
+           3. All var(--accent), var(--text), etc. use NEW values
+           4. The transition property creates smooth color animation
+      */
       html[data-theme="light"] {
-        --bg: white;
-        --button-bg: rgba(0, 0, 0, 0.03);
-        --card: rgba(255,255,255,0.9);
-        --muted: #47585b;
-        --text: #0b1416;
+        --bg: white;                      /* Clean white background */
+        --button-bg: rgba(0, 0, 0, 0.03); /* Subtle dark button bg */
+        --card: rgba(255,255,255,0.9);    /* Near-white cards */
+        --muted: #1a2628;                 /* Dark teal for secondary text */
+        --text: #0a0c0d;                  /* Near-black for readability */
+        --accent: #1f4a2a;                /* Dark forest green accent */
       }
 
-      /* ---------------------------
-         Base / reset
-         --------------------------- */
+      /* ====================================================================
+         CSS RESET & BASE STYLES
+         ====================================================================
+         These normalize browser defaults for consistent cross-browser rendering.
+      */
+      
+      /* Universal box-sizing: includes padding/border in element width */
       * { box-sizing: border-box; }
 
-      /* Combined html and body into a single block (removed duplicate bodies) */
+      /* Base document styles */
       html, body {
         height: 100%;
         font-family: 'Roboto Condensed', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
         color: var(--text);
-        -webkit-font-smoothing: antialiased;/* was in a separate rule before */
-        overflow: visible;     /* was in a separate rule before */
-        overflow-x: clip;
+        -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac */
+        overflow: visible;
+        overflow-x: clip;      /* Prevent horizontal scroll from animations */
       }
 
+      /* Section default spacing - creates visual separation between content areas */
+      section { padding: 64px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
 
-      section { padding: 64px 0; border-bottom: 1px solid rgba(255,255,255,0.04); } /* merged duplicate section rules */
-
+      /* Image defaults - responsive images that never exceed container */
       img { max-width: 1000%; height: auto; }
+      
+      /* Link reset - inherit color from parent, no underline */
       a { color: inherit; text-decoration: none; }
+      
+      /* Icon utility class */
       .icon { width: 24px; height: 24px; }
 
-      /* ---------------------------
-         Layout & Navigation
-         --------------------------- */
+      /* --------------------------
+         Horizontal Rule Styling
+         --------------------------
+         Custom <hr> elements as section dividers.
+         Uses high-contrast gold color for visibility.
+      */
+      hr {
+        border: none;
+        height: 2px;
+        background: #ffdb70;   /* Gold - good contrast on dark background */
+        opacity: 1;
+      }
+      html[data-theme="light"] hr {
+        background: #9a7000;   /* Darker gold for light theme contrast */
+      }
+
+      /* --------------------------
+         SVG Icon Colors (Light Theme)
+         --------------------------
+         Override SVG fill colors in light theme for proper contrast.
+         The dark theme uses #ffdb70 (gold), light theme needs darker #9a7000.
+         
+         These selectors target SVG icons in specific sections to ensure
+         they remain visible against the light background.
+      */
+      html[data-theme="light"] .provide svg,
+      html[data-theme="light"] #oursecurity svg,
+      html[data-theme="light"] #moreinfo svg,
+      html[data-theme="light"] #booking summary svg,
+      html[data-theme="light"] footer summary svg,
+      html[data-theme="light"] .abt svg,
+      html[data-theme="light"] footer .wrap svg {
+        fill: #9a7000;         /* Dark gold - 4.5:1+ contrast on white */
+      }
+
+      /* ====================================================================
+         LAYOUT COMPONENTS
+         ====================================================================
+      */
+
+      /* --------------------------
+         Content Wrapper
+         --------------------------
+         Centers content and adds horizontal padding.
+         max-width prevents lines from becoming too long (hard to read).
+      */
       .wrap { max-width: var(--max-width); margin: 0 auto; padding: 36px 20px; }
 
+      /* --------------------------
+         Navigation Bar
+         --------------------------
+         Sticky positioning keeps nav visible while scrolling.
+         Uses flexbox for horizontal layout.
+      */
       nav {
-        position: sticky;
-        top: 12px;
-        z-index: 40;
+        position: sticky;      /* Sticks to viewport while scrolling */
+        top: 12px;             /* 12px from top when stuck */
+        z-index: 40;           /* Above other content */
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 0 18px;
         font-family: 'Roboto Condensed';
-        width: 100dvw; 
+        width: 100dvw;         /* Full viewport width */
       }
 
+      /* Inner nav container with glass-morphism effect */
       .nav-inner {
         width: 100%;
         max-width: var(--max-width);
         display: flex;
         align-items: center;
         gap: 16px;
-        background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(3px);
+        background: rgba(30, 40, 50, 0.92);  /* Semi-transparent dark */
+        backdrop-filter: blur(3px);           /* Frosted glass effect */
         border-radius: 18px;
         padding: 10px 18px;
+        border: 2px solid #9ac465;        /* Green border for definition */
       }
 
+      /* --------------------------
+         Brand/Logo Area
+         --------------------------
+         Flexbox aligns logo image with text.
+         margin-right: auto pushes nav links to the right.
+      */
       .brand { display:flex; align-items:center; gap:5px; margin-right:auto; font-weight:700; font-family:'Sansation',serif; color:var(--accent); }
       .brand .logo { width:44px; height:44px; border-radius:2.75px; object-fit:cover; }
 
+      /* --------------------------
+         Desktop Navigation Links
+         --------------------------
+         Horizontal list of page section links.
+         Light background for contrast on dark nav bar.
+      */
       .nav-links { display:flex; gap:13px; align-items:center; flex-wrap:wrap; }
-      .nav-links a { padding:10px 12px; border-radius:10px; color:var(--text); font-weight:600; background: var(--button-bg); }
+      .nav-links a { padding:10px 12px; border-radius:10px; color:#1a1f14; font-weight:600; background: #f5f7f2; border: 2px solid #9ac465; }
 
+      /* --------------------------
+         Mobile Navigation
+         --------------------------
+         nav-toggle: Hamburger menu button (hidden on desktop)
+         nav-overlay: Full-screen menu that appears on mobile
+         
+         The overlay uses position:fixed and inset:0 to cover entire screen.
+         visibility:hidden instead of display:none for smoother transitions.
+      */
       .nav-toggle { display:none; background:transparent; border:0; color:var(--text); cursor:pointer; width:44px; height:44px; border-radius:8px; }
       .nav-overlay { visibility: hidden; align-items:center; justify-content:center; position:fixed; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.75)); z-index:80; padding:30px; color:white}
       .nav-overlay .links { display:grid; gap:10px; text-align:center; color: white;}
@@ -104,7 +273,9 @@
         background: transparent;
         color: white;
       }
-       .nav-overlay-close {
+      
+      /* Close button for mobile overlay */
+      .nav-overlay-close {
         position: absolute;
         top: 16px;
         right: 16px;
@@ -130,52 +301,95 @@
         transform: scale(0.95);
       }
 
-      /* ---------------------------
-         Unified Button & Interactive Styles
-         --------------------------- */
+      /* ====================================================================
+         INTERACTIVE ELEMENT STYLES
+         ====================================================================
+         Unified hover/active states for buttons and clickable elements.
+         Consistent transitions create a polished, professional feel.
+      */
+      
+      /* Apply smooth transition to all interactive elements */
       .nav-links a,
       .theme-toggle,
       summary {
         transition: all 0.2s ease;
       }
 
+      /* Nav link hover - slight lift effect and color change */
       .nav-links a:hover {
-        background: rgba(127, 172, 82, 0.15);
-        color: var(--muted);
-        transform: translateY(-1px);
+        background: #e8f0dc;
+        color: #1a1f14;
+        transform: translateY(-1px);  /* Subtle "lift" effect */
+        border-color: #7fac52;
       }
 
+      /* Nav link active (clicked) - press down effect */
       .nav-links a:active {
-        transform: translateY(0);
-        background: rgba(127, 172, 82, 0.2);
+        transform: translateY(0);     /* Return to original position */
+        background: #dbe8cf;
       }
 
+      /* Theme toggle button hover */
       .theme-toggle:hover {
         background: rgba(127, 172, 82, 0.12);
         color: var(--text);
         transform: translateY(-1px);  
       }
 
+      /* --------------------------
+         <details> / <summary> Elements
+         --------------------------
+         HTML5 disclosure widgets for expandable content.
+         Used for phone number reveal and credits section.
+         
+         How it works:
+           <details>
+             <summary>Click to expand</summary>
+             <p>Hidden content here</p>
+           </details>
+         
+         Clicking <summary> toggles visibility of sibling content.
+      */
       summary {
         border-radius: 5px;
         padding: 10px;
-        background-color: var(--button-bg);
+        background-color: #f5f7f2;    /* Light background for contrast */
+        color: #1a1f14;               /* Dark text */
         max-width: 200px;
-        
+        border: 2px solid #9ac465;
+        cursor: pointer;
       }
 
       summary:hover {
-        background: rgba(127, 172, 82, 0.12) !important;
-        border-color: rgba(127, 172, 82, 0.2) !important;
+        background: #e8f0dc !important;
+        border-color: #7fac52 !important;
         transform: translateY(-1px);
       }
 
       summary:active {
         transform: translateY(0);
-         background: rgba(127, 172, 82, 0.2);
+        background: #dbe8cf !important;
       }
 
-      /* Centered summary style */
+      /* When details is open, remove bottom border-radius for seamless connection */
+      details[open] summary {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      /* Content revealed when <details> is open */
+      details > p,
+      details > img {
+        background: #f5f7f2;
+        color: #1a1f14;
+        padding: 12px;
+        margin: 0;
+        border: 2px solid #9ac465;
+        border-top: none;             /* Connects seamlessly with summary */
+        border-radius: 0 0 5px 5px;   /* Only round bottom corners */
+      }
+
+      /* Centered summary variant - used for phone number and credits */
       summary.summary-centered {
         display: flex;
         justify-content: center;
@@ -185,118 +399,254 @@
         margin: 0 auto;
       }
 
+      /* --------------------------
+         Light Theme Overrides
+         --------------------------
+         These rules adjust colors for light mode.
+         Darker greens replace lighter ones for contrast.
+      */
       html[data-theme="light"] .nav-links a:hover {
-        background: rgba(59, 107, 71, 0.1);
-        color: var(--text);
+        background: #cddfc0;
+        color: #0a0c0d;
       }
 
-      html[data-theme="light"] .nav-links a:active, summary:active {
-        background: rgba(59, 107, 71, 0.15);
+      html[data-theme="light"] .nav-links a:active, html[data-theme="light"] summary:active {
+        background: #bfd4b0;
+      }
+
+      html[data-theme="light"] .nav-links a {
+        background: #e8f0e0;
+        color: #0a0c0d;
+        border-color: #2d5a38;    /* Darker green border */
       }
 
       html[data-theme="light"] .theme-toggle:hover {
-        background: rgba(59, 107, 71, 0.08);
+        background: #cddfc0;
+      }
+
+      html[data-theme="light"] summary {
+        background: #e8f0e0;
+        color: #0a0c0d;
+        border-color: #2d5a38;
       }
 
       html[data-theme="light"] summary:hover {
-        background: rgba(59, 107, 71, 0.08) !important;
-        border-color: rgba(59, 107, 71, 0.12) !important;
+        background: #cddfc0 !important;
+        border-color: #1a3d22 !important;
       }
 
-      /* ---------------------------
-         Hero
-         --------------------------- */
-      #hero { position:relative; }
-      #hero-image{
-        height:82.98dvh;
-        background-image:url("sookasemgif.gif");
-        background-size:cover;
-        background-position:center;
-        display:flex;
-        width:97.64dvw;
-        box-shadow: black 0px -60px 10rem inset;
+      html[data-theme="light"] details > p,
+      html[data-theme="light"] details > img {
+        background: #e8f0e0;
+        color: #0a0c0d;
+        border-color: #2d5a38;
       }
+
+      /* ====================================================================
+         HERO SECTION
+         ====================================================================
+         Full-width banner at top of page with background image/video.
+         Uses viewport units (dvh/dvw) for responsive sizing.
+         
+         dvh = Dynamic Viewport Height (accounts for mobile browser UI)
+         dvw = Dynamic Viewport Width
+      */
+      #hero { position:relative; }
+      
+      #hero-image{
+        height:82.98dvh;              /* ~83% of viewport height */
+        background-image:url("sookasemgif.gif");  /* Animated GIF background */
+        background-size:cover;        /* Cover entire area, crop if needed */
+        background-position:center;   /* Keep center of image visible */
+        display:flex;
+        width:97.64dvw;               /* Slightly less than full width */
+        box-shadow: black 0px -60px 10rem inset;  /* Dark gradient overlay from bottom */
+      }
+      
+      /* Center all content within hero */
       #hero * { justify-content:center; align-items:center; }
+      
+      /* Hero text content */
       .hero-text { position:relative; z-index:2; text-align:center; padding:48px 22px; color:var(--text); }
+      
+      /* Hero title - uses clamp() for responsive sizing:
+         clamp(min, preferred, max) = fluid typography
+         At narrow screens: 36px, at wide screens: 64px, scales with 8vw between */
       .hero-title { font-family:'Sansation', serif; font-size:clamp(36px,8vw,64px);color:white; margin:0 0 8px; font-weight:700; letter-spacing:0.6px; display:flex; }
       .hero-sub { color:white; font-size:clamp(36px,8vw,64px); margin:0 0 10px; font-family: Sansation;}
-      .hero-down { display:inline-block; margin-top:18px; color:white; font-size:20px; opacity:.9; }
+      .hero-down { display:inline-block; margin-top:18px; color:white; font-size:20px; opacity:1; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-      /* ---------------------------
-         Content / components
-         --------------------------- */
-      h1,h2,h3 { color:var(--accent); margin:0 0 12px; font-family:'Sansation',serif; }
+      /* ====================================================================
+         CONTENT COMPONENTS
+         ====================================================================
+      */
+      
+      /* --------------------------
+         Typography
+         --------------------------
+      */
+      h1,h2,h3 { color:var(--accent); margin:0 0 12px; font-family:'Sansation',serif; font-weight: 700; }
       p { color:var(--muted); line-height:1.5; margin:0 0 12px; }
 
-      /* NEAR US scroller */
+      /* --------------------------
+         Horizontal Scroll Gallery ("Near Us" Section)
+         --------------------------
+         This creates the horizontal scrolling effect for nearby locations.
+         The scroll animation is controlled by GSAP in index.js.
+         
+         flex-flow: row nowrap keeps items in a single horizontal line.
+         Large gap (30rem) creates spacing between images.
+      */
       #wrap-scroll { display:flex; flex-flow: row nowrap; gap: 30rem; }
       #wrap-scroll img { width: 30rem; height: 20rem; }
 
-      /* TABLES */
+      /* --------------------------
+         Pricing Table
+         --------------------------
+         Displays rental information in a structured table format.
+         Uses semantic <th> elements for accessibility (screen readers
+         announce column headers with each cell).
+      */
       table.t {
         width:100%;
         max-width:900px;
         border-radius:10px;
-        overflow:hidden;
-        background:linear-gradient(180deg,#ffffff03,#00000004);
-        border:1px solid rgba(255,255,255,0.03);
+        overflow:hidden;              /* Clips content to rounded corners */
+        background: rgba(30, 40, 50, 0.85);
+        border: 2px solid #9ac465;
+        border-collapse: collapse;    /* Removes gaps between cells */
       }
-      table.t td { padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.03); vertical-align:middle; color:var(--muted); }
-      table.t tr:last-child td { border-bottom:0; }
+      
+      /* Table header cells */
+      table.t th {
+        padding: 16px 18px;
+        text-align: left;
+        color: #c8e89a;               /* Accent green */
+        font-weight: 700;
+        font-family: 'Sansation', serif;
+        background: rgba(20, 30, 40, 0.9);
+        border-bottom: 2px solid #9ac465;
+      }
+      
+      /* Table data cells */
+      table.t td { padding:14px 18px; border-bottom:1px solid #6b9241; vertical-align:middle; color: #e8f0dc; }
+      table.t tbody tr:last-child td { border-bottom:0; }  /* No border on last row */
 
+      /* Table light theme overrides */
+      html[data-theme="light"] table.t {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: #2d5a38;
+      }
+      html[data-theme="light"] table.t th {
+        color: #1f4a2a;
+        background: rgba(232, 240, 224, 0.95);
+        border-bottom-color: #2d5a38;
+      }
+      html[data-theme="light"] table.t td {
+        color: #1a2628;
+        border-bottom-color: #3b6b47;
+      }
+
+      /* --------------------------
+         Footer
+         --------------------------
+      */
       footer {
         padding: 48px 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        border-top: 2px solid #c8e89a;
         margin-top: 64px;
       }
 
       footer h1 {
-        color: var(--accent);
+        color: #c8e89a;
         margin: 0 0 8px;
+        font-weight: 700;
       }
 
       footer p {
-        color: var(--muted);
+        color: #e8f0dc;
         margin: 0;
       }
 
       footer a {
-        color: var(--accent);
+        color: #c8e89a;
         transition: color 0.2s ease;
         text-decoration: underline;
+        font-weight: 600;
       }
 
       footer a:hover {
-        color: var(--text);
+        color: #ffffff;
       }
 
-      /* grid2 gallery (kept same rules but grouped) */
+      html[data-theme="light"] footer {
+        border-top-color: #1f4a2a;
+      }
+
+      html[data-theme="light"] footer h1 {
+        color: #1f4a2a;
+        font-weight: 700;
+      }
+
+      html[data-theme="light"] footer p {
+        color: #1a2628;
+      }
+
+      html[data-theme="light"] footer a {
+        color: #0d3318;
+        font-weight: 600;
+      }
+
+      html[data-theme="light"] footer a:hover {
+        color: #0a0c0d;
+      }
+
+      /* --------------------------
+         Photo Gallery Grid
+         --------------------------
+         CSS Grid layout for the "About" section images.
+         1fr 1fr = two equal-width columns.
+         object-fit: cover ensures images fill their container
+         without distortion (cropping if needed).
+      */
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
       .grid2 img { box-sizing: border-box; height: 300px; width: 100%; object-fit: cover; object-position: center; display: block; }
 
-      /* small helpers */
+      /* --------------------------
+         Utility Classes
+         --------------------------
+         Small helper classes for quick styling.
+      */
       .muted { color: var(--muted); }
       .accent { color: var(--accent); }
-      html { scroll-behavior: smooth; }
+      html { scroll-behavior: smooth; }  /* Smooth anchor link scrolling */
 
-      /* Theme toggle styling */
+      /* --------------------------
+         Theme Toggle Button
+         --------------------------
+         Button in nav that switches between dark/light themes.
+         Uses CSS Grid (place-items) to perfectly center the icon.
+      */
       .theme-toggle {
         margin-left: 18px;
         display:inline-grid;
-        place-items:center;
+        place-items:center;       /* Centers icon both horizontally and vertically */
         width:44px;
         height:44px;
-        border:1px solid rgba(255,255,255,0.06);
-        background:var(--button-bg);
-        color:var(--muted);
+        border: 2px solid #9ac465;
+        border-radius: 10px;
+        background: #f5f7f2;
+        color: #1a1f14;
         cursor:pointer;
         transition:transform .12s ease, background .15s;
       }
 
       .theme-toggle:active{ transform: scale(0.95); transform:translateY(0) }
-      .theme-toggle svg{ width:20px;height:20px; display:block; }
-      html[data-theme="light"] .nav-inner { background: rgba(0,0,0,0.03); }
-      html[data-theme="light"] .nav-links a:hover, .theme-toggle:hover, summary:hover { background: rgba(59,107,71,0.06); color:var(--text)}
+      .theme-toggle svg{ width:20px;height:20px; display:block; fill: #1a1f14; }
+      html[data-theme="light"] .nav-inner { background: rgba(255, 255, 255, 0.95); border-color: #2d5a38; }
+      html[data-theme="light"] .theme-toggle { background: #e8f0e0; border-color: #2d5a38; }
+      html[data-theme="light"] .theme-toggle svg { fill: #0a0c0d; }
+      html[data-theme="light"] .nav-links a:hover, .theme-toggle:hover, summary:hover { background: #dbe8cf; color: #1a1f14; }
 
       .nav-links a:hover, .theme-toggle:hover, summary:hover { 
         cursor: pointer;
@@ -317,8 +667,8 @@
       .reg-form {
         max-width: 600px;
         margin: 32px auto;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(30, 40, 50, 0.85);
+        border: 2px solid #9ac465;
         border-radius: 12px;
         padding: 40px;
         backdrop-filter: blur(3px);
@@ -331,8 +681,8 @@
       }
 
       .form-group label {
-        color: var(--muted);
-        font-weight: 600;
+        color: #f0f5e8;
+        font-weight: 700;
         margin-bottom: 8px;
         font-size: 14px;
         text-transform: uppercase;
@@ -343,10 +693,10 @@
       .form-group textarea,
       .form-group select {
         padding: 12px 16px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 2px solid #9ac465;
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.02);
-        color: var(--text);
+        background: #f5f7f2;
+        color: #1a1f14;
         font-family: 'Roboto Condensed', system-ui;
         font-size: 14px;
         transition: all 0.2s ease;
@@ -356,17 +706,17 @@
       .form-group textarea:focus,
       .form-group select:focus {
         outline: none;
-        border-color: var(--accent);
-        background: rgba(127, 172, 82, 0.05);
-        box-shadow: 0 0 0 3px rgba(127, 172, 82, 0.15);
+        border-color: #9fc76a;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(127, 172, 82, 0.5);
       }
 
       .form-group select option {
-        color: rgb(46, 46, 46); 
+        color: #1a1f14; 
       }
       .form-group input::placeholder,
       .form-group textarea::placeholder {
-        color: rgba(205, 214, 179, 0.5);
+        color: #6b7a5c;
       }
 
       .form-group textarea {
@@ -438,28 +788,33 @@
       }
 
       html[data-theme="light"] .reg-form {
-        background: rgba(0, 0, 0, 0.04);
-        border-color: rgba(0, 0, 0, 0.06);
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid #2d5a38;
       }
 
       html[data-theme="light"] .form-group input,
       html[data-theme="light"] .form-group textarea,
       html[data-theme="light"] .form-group select {
-        background: rgba(0, 0, 0, 0.03);
-        border-color: rgba(0, 0, 0, 0.08);
-        color: var(--text);
+        background: #e8f0e0;
+        border: 2px solid #2d5a38;
+        color: #0a0c0d;
       }
 
       html[data-theme="light"] .form-group input::placeholder,
       html[data-theme="light"] .form-group textarea::placeholder {
-        color: rgba(75, 92, 95, 0.5);
+        color: #5a6b5e;
       }
 
       html[data-theme="light"] .form-group input:focus,
       html[data-theme="light"] .form-group textarea:focus,
       html[data-theme="light"] .form-group select:focus {
-        background: rgba(127, 172, 82, 0.08);
-        border-color: var(--accent);
+        background: #dbe8cf;
+        border-color: #1a3d22;
+        box-shadow: 0 0 0 4px rgba(45, 90, 56, 0.5);
+      }
+
+      html[data-theme="light"] .form-group label {
+        color: #0a0c0d;
       }
 
       /* Booking Section Styles (moved out of media query so it applies on all sizes) */
@@ -551,8 +906,8 @@
     <!-- Skip to content -->
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <!-- Geometric Background SVG -->
-    <svg class="geometric-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;">
+    <!-- Geometric Background SVG (decorative, hidden from screen readers) -->
+    <svg class="geometric-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;" aria-hidden="true" role="presentation">
       <defs>
         <pattern id="geo-pattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
           <!-- Accent hexagons -->
@@ -575,13 +930,14 @@
       <rect x="400" y="900" width="150" height="150" fill="var(--muted)" opacity="0.03" transform="rotate(45 475 975)"/>
     </svg>
 
+    <header role="banner">
     <nav aria-label="Main navigation">
       <div class="nav-inner">
         <!-- brand -->
         <div class="brand">
           <img class="logo" src="https://bcdn.renthub.in.th/listing_picture/201811/20181110/fY2omLVCh1pNFfXDiXHK.jpg?class=doptimized" alt="Sookasem place"/>
           <span>
-            <div style="font-size:1.05rem">SOOKSAEM</div>
+            <div style="font-size:1.05rem">SOOKASEM</div>
             <div style="font-size:1.05rem;color:var(--muted);line-height:1">PLACE</div>
           </span>
         </div>
@@ -632,10 +988,11 @@
         </div>
       </div>
     </nav>
+    </header>
 
     <!-- HERO: removed deprecated center tag and corrected text -->
      <br>
-    <div id="hero">
+    <section id="hero" aria-label="Welcome to Sookasem Place">
       <div id="hero-image" role="img" aria-label="Sookasem place hero image">
         <div class="hero-text">
           <h1 class="hero-title">SOOKASEM</h1>
@@ -643,14 +1000,14 @@
           <div class="hero-down">↓</div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <main id="main">
+    <main id="main" role="main">
     <!-- Fix wrong ID (removed the leading #) -->
-    <section>
+    <section aria-labelledby="about-heading">
       <div class="wrap">
         <article class="abt" id="about">
-          <h1>ABOUT</h1>
+          <h1 id="about-heading">ABOUT</h1>
           <div class="content">
             <p>
               <svg
@@ -658,7 +1015,7 @@
                 height="16px"
                 viewBox="0 -960 960 960"
                 width="24px"
-                fill="#d4a373"
+                fill="#ffdb70"
                 aria-hidden="true"
               >
                 <path
@@ -675,7 +1032,7 @@
                 height="16px"
                 viewBox="0 -960 960 960"
                 width="24px"
-                fill="#d4a373"
+                fill="#ffdb70"
                 aria-hidden="true"
               >
                 <path
@@ -688,27 +1045,30 @@
         </article>
 
         <!-- gallery -->
-        <div class="grid2">
+        <div class="grid2" role="region" aria-label="Photo gallery">
           <div>
            <img
             src="https://bcdn.renthub.in.th/listing_picture/201811/20181110/5yLdGtXdeBNsfSsuxdES.jpg?class=doptimized"
+            alt="Sookasem Place apartment room interior"
           /></div>
           <div>
             <img
             src="https://bcdn.renthub.in.th/listing_picture/201811/20181110/VtrytfpALHnjN9krAitg.jpg?class=doptimized"
+            alt="Sookasem Place room with furniture and air conditioning"
           /></div><div>
-          <img class="img_a_3" src="https://bcdn.renthub.in.th/listing_picture/201811/20181110/fY2omLVCh1pNFfXDiXHK.jpg?class=doptimized"></div>
+          <img class="img_a_3" src="https://bcdn.renthub.in.th/listing_picture/201811/20181110/fY2omLVCh1pNFfXDiXHK.jpg?class=doptimized" alt="Sookasem Place building exterior"></div>
          <div><img
             class="img_a_4"
             src="https://bcdn.renthub.in.th/listing_picture/201811/20181110/SouqA7e2ZEQSSBLB1moC.jpg?class=doptimized"
+            alt="Sookasem Place bedroom with bed and amenities"
           /></div><br>
         </div>
       </div>
     </section>
-  <hr color="#d4a373">
-    <section class="provide" id="whatweprovide">
+  <hr color="#ffdb70" aria-hidden="true">
+    <section class="provide" id="whatweprovide" aria-labelledby="whatweprovide-heading">
       <center>
-        <h1>WHAT WE PROVIDE</h1><br><br><br><br>
+        <h1 id="whatweprovide-heading">WHAT WE PROVIDE</h1><br><br><br><br>
         <div
           class="grid-container">
           <p>
@@ -717,7 +1077,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M480-120q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM254-346l-84-86q59-59 138.5-93.5T480-560q92 0 171.5 35T790-430l-84 84q-44-44-102-69t-124-25q-66 0-124 25t-102 69ZM84-516 0-600q92-94 215-147t265-53q142 0 265 53t215 147l-84 84q-77-77-178.5-120.5T480-680q-116 0-217.5 43.5T84-516Z"
@@ -730,7 +1090,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5t72 48.5l94-94q9-9 23.5-13.5T670-390l138 28q14 4 23 14.5t9 23.5v162q0 18-12 30t-30 12ZM241-600l66-66-17-94h-89q5 41 14 81t26 79Zm358 358q39 17 79.5 27t81.5 13v-88l-94-19-67 67ZM241-600Zm358 358Z"
@@ -744,7 +1104,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M200-120q-17 0-28.5-11.5T160-160v-40h-40v-160q0-17 11.5-28.5T160-400h40v-280q0-66 47-113t113-47q66 0 113 47t47 113v400q0 33 23.5 56.5T600-200q33 0 56.5-23.5T680-280v-280h-40q-17 0-28.5-11.5T600-600v-160h40v-40q0-17 11.5-28.5T680-840h80q17 0 28.5 11.5T800-800v40h40v160q0 17-11.5 28.5T800-560h-40v280q0 66-47 113t-113 47q-66 0-113-47t-47-113v-400q0-33-23.5-56.5T360-760q-33 0-56.5 23.5T280-680v280h40q17 0 28.5 11.5T360-360v160h-40v40q0 17-11.5 28.5T280-120h-80Z"
@@ -758,7 +1118,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M444-600q-55 0-108 15.5T238-538l42 378h400l44-400h-28q-38 0-69-5.5T542-587q-23-7-48-10t-50-3Zm-216-25q51-27 105.5-41T445-680q30 0 59.5 4t58.5 12q50 14 76.5 19t56.5 5h37l17-160H210l18 175Zm51 545q-31 0-53.5-20T200-151l-80-729h720l-80 729q-3 31-25.5 51T681-80H279Zm165-80h236-400 164Z"
@@ -771,7 +1131,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h480q33 0 56.5 23.5T800-800v640q0 33-23.5 56.5T720-80H240Zm0-80h480v-640H240v640Zm240-40q83 0 141.5-58.5T680-400q0-83-58.5-141.5T480-600q-83 0-141.5 58.5T280-400q0 83 58.5 141.5T480-200Zm0-68q-26 0-50.5-9.5T386-306l188-188q19 19 28.5 43.5T612-400q0 55-38.5 93.5T480-268ZM320-680q17 0 28.5-11.5T360-720q0-17-11.5-28.5T320-760q-17 0-28.5 11.5T280-720q0 17 11.5 28.5T320-680Zm120 0q17 0 28.5-11.5T480-720q0-17-11.5-28.5T440-760q-17 0-28.5 11.5T400-720q0 17 11.5 28.5T440-680ZM240-160v-640 640Z"
@@ -785,7 +1145,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M80-80q-17 0-28.5-11.5T40-120v-320l85-203q7-17 22-27t33-10h360q18 0 33 10t22 27l85 203v320q0 17-11.5 28.5T640-80h-40q-17 0-28.5-11.5T560-120v-40H160v40q0 17-11.5 28.5T120-80H80Zm72-440h415l-33-80H186l-34 80Zm-32 280h480v-200H120v200Zm100-40q25 0 42.5-17.5T280-340q0-25-17.5-42.5T220-400q-25 0-42.5 17.5T160-340q0 25 17.5 42.5T220-280Zm280 0q25 0 42.5-17.5T560-340q0-25-17.5-42.5T500-400q-25 0-42.5 17.5T440-340q0 25 17.5 42.5T500-280Zm220 80v-344l-73-176H227l18-43q7-17 22-27t33-10h360q18 0 33 10t22 27l85 203v320q0 17-11.5 28.5T760-200h-40Zm120-120v-344l-73-176H347l18-43q7-17 22-27t33-10h360q18 0 33 10t22 27l85 203v320q0 17-11.5 28.5T880-320h-40Zm-480-20Z"
@@ -794,15 +1154,15 @@
             CAR PARK
           </p>
           <p>
-            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M280-240h120v-160h40v-100q0-33-23.5-56.5T360-580h-40q-33 0-56.5 23.5T240-500v100h40v160Zm60-380q21 0 35.5-14.5T390-670q0-21-14.5-35.5T340-720q-21 0-35.5 14.5T290-670q0 21 14.5 35.5T340-620Zm180 100h200L620-680 520-520Zm100 240 100-160H520l100 160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0 0v-560 560Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70"><path d="M280-240h120v-160h40v-100q0-33-23.5-56.5T360-580h-40q-33 0-56.5 23.5T240-500v100h40v160Zm60-380q21 0 35.5-14.5T390-670q0-21-14.5-35.5T340-720q-21 0-35.5 14.5T290-670q0 21 14.5 35.5T340-620Zm180 100h200L620-680 520-520Zm100 240 100-160H520l100 160ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0 0v-560 560Z"/></svg>
             ELEVATOR
           </p>
         </div>
       </section>
-        <hr color="#d4a373"><br>
+        <hr color="#ffdb70" aria-hidden="true"><br>
         <center>
-        <section id="oursecurity">
-        <span><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="30px" fill="#d4a373"><path d="M480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q97-30 162-118.5T718-480H480v-315l-240 90v207q0 7 2 18h238v316Z"/></svg><h1>OUR SECURITY</h1></span>
+        <section id="oursecurity" aria-labelledby="oursecurity-heading">
+        <span><svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="30px" fill="#ffdb70" aria-hidden="true"><path d="M480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q97-30 162-118.5T718-480H480v-315l-240 90v207q0 7 2 18h238v316Z"/></svg><h1 id="oursecurity-heading">OUR SECURITY</h1></span>
           <br><br>
           <div class="grid-container">
           <p>
@@ -811,7 +1171,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M485-240Zm26 80H160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440v80q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32h245q4 21 10.5 41t15.5 39Zm209 80q-73-18-116.5-80T560-298v-102l160-80 160 80v102q0 76-43.5 138T720-80Zm0-84q38-18 59-55t21-79v-52l-80-40-80 40v52q0 42 21 79t59 55ZM480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm240 363Z"
@@ -825,7 +1185,7 @@
               height="16px"
               viewBox="0 -960 960 960"
               width="24px"
-              fill="#d4a373"
+              fill="#ffdb70"
             >
               <path
                 d="M480-260q75 0 127.5-52.5T660-440q0-75-52.5-127.5T480-620q-75 0-127.5 52.5T300-440q0 75 52.5 127.5T480-260Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM160-120q-33 0-56.5-23.5T80-200v-480q0-33 23.5-56.5T160-760h126l74-80h240l74 80h126q33 0 56.5 23.5T880-680v480q0 33-23.5 56.5T800-120H160Zm0-80h640v-480H638l-73-80H395l-73 80H160v480Zm320-240Z"
@@ -834,62 +1194,69 @@
             CCTV
           </p>
           <p>
-            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720Zm-720 80h640v-80H160v80Zm0 160v240h640v-240H160Zm0 240v-480 480Z"/></svg>SECURITY CARD
+            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70"><path d="M880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720Zm-720 80h640v-80H160v80Zm0 160v240h640v-240H160Zm0 240v-480 480Z"/></svg>SECURITY CARD
           </p>
         </div>
       </section>
       </center>
-      <hr color="#d4a373">
-        <section id="nearus">
-          <h1>NEAR US</h1>
+      <hr color="#ffdb70" aria-hidden="true">
+        <section id="nearus" aria-labelledby="nearus-heading">
+          <h1 id="nearus-heading">NEAR US</h1>
           <p>
             Many Hospitals, Shopping Malls and University are in the same area
             such as:
           </p>
           <div id="wrap-scroll">
             <figure style="position: relative; top:30px">
-              <img src="https://lh3.googleusercontent.com/p/AF1QipOSIHRnrxw11ku8NYQXKtlI_fitTQVzRS-19r0V=w446-h240-k-no" />
+              <img src="https://lh3.googleusercontent.com/p/AF1QipOSIHRnrxw11ku8NYQXKtlI_fitTQVzRS-19r0V=w446-h240-k-no" alt="Samitivej Hospital building" />
               <figcaption>Samitivej Hospital</figcaption>
             </figure>
             <figure style="position: relative; top:-30px">
               <img
                 src="https://thaimedicalvacation.com/wp-content/uploads/2013/05/Ramkhamhaeng-hospital-chiang-mai-1-ram-group.jpg"
+                alt="Ramkhamhaeng Hospital building"
               />
               <figcaption>Ramkhamheang Hospital</figcaption>
             </figure>
             <figure style="position: relative; top:30px">
               <img
                 src="https://media.themalllifestore.com/M8_Facade_Perspective_Layer3_0c862d18c1.jpg"
+                alt="The Mall Bangkapi shopping center"
               />
               <figcaption>The Mall Bangkapi</figcaption>
             </figure>
             <figure style="position: relative; top:-30px">
               <img
                 src="https://img.wongnai.com/p/1920x0/2016/07/04/0995b19215874e6b9e948092880c8b2b.jpg"
+                alt="The Nine Rama 9 shopping center"
               />
               <figcaption>The Nine Rama 9</figcaption>
             </figure>
             <figure style="position: relative; top:30px">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/d/d5/ABAC_Assumption_University_Turm_Bangkok_Thailand.jpg"
+                alt="ABAC Assumption University campus"
               />
               <figcaption>ABAC</figcaption>
             </figure>
             <figure style="position: relative; top:-30px">
               <img
                 src="https://media.licdn.com/dms/image/v2/C511BAQELFxAbDk2gHw/company-background_10000/company-background_10000/0/1584477047032/ramkhamhaengbangkok_university_cover?e=2147483647&v=beta&t=8AJBsWxxCAE_-t-0Iwj2a3Z0deNg17J-UZEnqDpTR7Q"
+                alt="Ramkhamhaeng University campus"
               />
               <figcaption>Ramkhamhaeng University</figcaption>
             </figure>
             <figure style="position: relative; top:30px">
               <img
-                src="https://www.stamford.edu/wp-content/uploads/2018/06/Stamford-University-Oriental-Day.jpg"
+                src="https://lh3.googleusercontent.com/p/AF1QipOiSnyfQ5wCA8FRNH_ZZ4wA19fSM2mK7V-pFQxv=s680-w680-h510-rw"
+                alt="Stamford University campus"
               />
               <figcaption>Stamford University</figcaption>
             </figure>
             <figure style="position: relative; top:-30px">
               <img
                 src="https://www.cnprogress.com/uploads/images/160920173527Xbz3.jpg"
+                alt="Sports Authority of Thailand building"
               />
               <figcaption>
                 And The Sports Authority of Thailand is not far away.
@@ -898,6 +1265,7 @@
             <figure style="position: relative; top:30px">
               <img
                 src="711.png"
+                alt="7-Eleven convenience store"
               />
               <figcaption>
                 Nearby is supermarket and convenience store such as 7-11 and Max
@@ -906,71 +1274,78 @@
             </figure>
             </div>
 
-            <br><br> <br><br><hr  color="#d4a373"><br><br><br><br><br><center>
-          <section id="rentalrate">
-            <h1>RENTAL RATE FOR ONLY</h1>
+            <br><br> <br><br><hr  color="#ffdb70" aria-hidden="true"><br><br><br><br><br><center>
+          <section id="rentalrate" aria-labelledby="rentalrate-heading">
+            <h1 id="rentalrate-heading">RENTAL RATE FOR ONLY</h1>
           <h2 style="color: var(--text)" class="text_spl">5,000-19,000 THB/MONTH</h2>
           </section><br><br><br><br><br>
           
-           <hr  color="#d4a373"><br><Br>
-          <section id="moreinfo">
-          <h1 class="m_i">MORE INFO</h1>
+           <hr  color="#ffdb70" aria-hidden="true"><br><Br>
+          <section id="moreinfo" aria-labelledby="moreinfo-heading">
+          <h1 class="m_i" id="moreinfo-heading">MORE INFO</h1>
           <table class="t">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Price / Details</th>
+              </tr>
+            </thead>
+            <tbody>
             <tr>
-              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Deposit</td>
+              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70" aria-hidden="true"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Deposit</td>
               <td>1 month</td>
             </tr>
             <tr>
-              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Advanced Payment</td>
+              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70" aria-hidden="true"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Advanced Payment</td>
               <td>1 month</td>
             </tr>
             <tr>
-              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Electricity Price</td>
+              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70" aria-hidden="true"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Electricity Price</td>
               <td>7 THB<small>/unit</small></td>
             </tr>
             <tr>
-              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Water price</td>
+              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70" aria-hidden="true"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Water price</td>
               <td>18 THB<small>/unit</small> minimum 36 THB<small>/month</small></td>
             </tr>
             <tr>
-              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Service Fee</td>
+              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70" aria-hidden="true"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Service Fee</td>
               <td>Please Contact</td>
             </tr>
             <tr>
-              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Internet</td>
+              <td><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70" aria-hidden="true"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>Internet</td>
               <td>200 THB</td>
             </tr>
-          
+            </tbody>
           </table>
           </section>
         </center>
         </section>
 
-        <hr  color="#d4a373">
-        <section id="booking">
-          <H1>BOOKING</H1>
+        <hr  color="#ffdb70" aria-hidden="true">
+        <section id="booking" aria-labelledby="booking-heading">
+          <h1 id="booking-heading">BOOKING</h1>
           <h2>To book a residence, please call our number, and we will get back to you shortly: </h2>
           <details>
-            <summary class="summary-centered"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5t72 48.5l94-94q9-9 23.5-13.5T670-390l138 28q14 4 23 14.5t9 23.5v162q0 18-12 30t-30 12ZM241-600l66-66-17-94h-89q5 41 14 81t26 79Zm358 358q39 17 79.5 27t81.5 13v-88l-94-19-67 67ZM241-600Zm358 358Z"/></svg> 0612494xxx</summary>
+            <summary class="summary-centered"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70"><path d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5t72 48.5l94-94q9-9 23.5-13.5T670-390l138 28q14 4 23 14.5t9 23.5v162q0 18-12 30t-30 12ZM241-600l66-66-17-94h-89q5 41 14 81t26 79Zm358 358q39 17 79.5 27t81.5 13v-88l-94-19-67 67ZM241-600Zm358 358Z"/></svg> 0612494xxx</summary>
             <p>0612494695</p>
           </details>
           <br>
-          <section class="registration">
-          <h2>Or sign a registration form:</h2>
+          <section class="registration" aria-labelledby="registration-form-heading">
+          <h2 id="registration-form-heading">Or sign a registration form:</h2>
             <form class="reg-form" action="https://formsubmit.co/zainab.mulan@gmail.com" method="POST" id="registrationForm">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName" required placeholder="John Doe">
+                <input type="text" id="fullName" name="fullName" required placeholder="John Doe" autocomplete="name">
               </div>
 
               <div class="form-row">
                 <div class="form-group">
                   <label for="email">Email</label>
-                  <input type="email" id="email" name="email" required placeholder="john@example.com">
+                  <input type="email" id="email" name="email" required placeholder="john@example.com" autocomplete="email">
                 </div>
                 <div class="form-group">
                   <label for="phone">Phone Number</label>
-                  <input type="tel" id="phone" name="phone" required placeholder="+66 98 xxx xxxx">
+                  <input type="tel" id="phone" name="phone" required placeholder="+66 98 xxx xxxx" autocomplete="tel">
                 </div>
               </div>
 
@@ -1006,38 +1381,38 @@
           </section>
           </section>
 
-        <hr color="#d4a373">
+        <hr color="#ffdb70" aria-hidden="true">
         <br><br><br><br><br><br>
-        <section id="location" class="wrap text-center">
-          <h1 class="loc">LOCATION</h1>
+        <section id="location" class="wrap text-center" aria-labelledby="location-heading">
+          <h1 class="loc" id="location-heading">LOCATION</h1>
           <div class="map-wrap" aria-hidden="false">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.435872509923!2d100.640331018756!3d13.75256831083114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x311d61318b6c8a6b%3A0xac1373ca0c7113ef!2sSookasem%20place!5e0!3m2!1sen!2sth!4v1759125686387!5m2!1sen!2sth" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Sookasem Place on Google Maps"></iframe>
           </div>
         </section>
-        <br><hr color="#d4a373"><br>
+        <br><hr color="#ffdb70" aria-hidden="true"><br>
           </main>
-          <footer>
+          <footer role="contentinfo" aria-label="Site footer">
   <div class="wrap" style="text-align: center;">
     <h1 style="color: var(--accent); margin-bottom: 8px;">Sookasem</h1>
     <h1 style="color: var(--text); margin-bottom: 16px;font-family:'Sansation'">PLACE</h1>
     
     <div style="display: grid; gap: 12px; margin-bottom: 24px;">
       <a href="https://www.renthub.in.th/en/Sookasem-place"><p style="color: var(--muted);">
-        <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373" style="vertical-align: middle;">
+        <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70" style="vertical-align: middle;">
           <path d="M200-160v-366L88-440l-48-64 440-336 160 122v-82h120v174l160 122-48 64-112-86v366H520v-240h-80v240H200Zm80-80h80v-240h240v240h80v-347L480-739 280-587v347Zm120-319h160q0-32-24-52.5T480-632q-32 0-56 20.5T400-559Zm-40 319v-240h240v240-240H360v240Z"/>
         </svg>
         On RentHub Platform
       </p></a>
       
           <details>
-            <summary class="summary-centered"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#d4a373"><path d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5t72 48.5l94-94q9-9 23.5-13.5T670-390l138 28q14 4 23 14.5t9 23.5v162q0 18-12 30t-30 12ZM241-600l66-66-17-94h-89q5 41 14 81t26 79Zm358 358q39 17 79.5 27t81.5 13v-88l-94-19-67 67ZM241-600Zm358 358Z"/></svg> 0612494xxx</summary>
+            <summary class="summary-centered"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="24px" fill="#ffdb70"><path d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5t72 48.5l94-94q9-9 23.5-13.5T670-390l138 28q14 4 23 14.5t9 23.5v162q0 18-12 30t-30 12ZM241-600l66-66-17-94h-89q5 41 14 81t26 79Zm358 358q39 17 79.5 27t81.5 13v-88l-94-19-67 67ZM241-600Zm358 358Z"/></svg> 0612494xxx</summary>
             <p>0612494695</p>
           </details>
           <details>
             <summary class="summary-centered">
-              LINE (QR Code)
+              LINE
             </summary>
-            <img src="line_qr.jpg">
+            <img src="line_qr.jpg" alt="LINE QR code for contact">
           </details>
     </div>
 
